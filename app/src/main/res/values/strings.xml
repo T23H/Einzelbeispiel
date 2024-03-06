@@ -4,4 +4,5 @@
     <string name="abschicken">ABSCHICKEN</string>
     <string name="matrikelnummer">Matrikelnummer</string>
     <string name="gib_deine_matrikelnummer_ein">Gib deine Matrikelnummer ein</string>
+    <string name="berechnen">Berechnen</string>
 </resources>
