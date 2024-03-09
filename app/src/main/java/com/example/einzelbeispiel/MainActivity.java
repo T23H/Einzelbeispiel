@@ -1,5 +1,6 @@
 package com.example.einzelbeispiel;
 
+import android.database.Observable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,10 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        matNr = (EditText)findViewById(R.id.editText);
-        server = (TextView)findViewById(R.id.textView3);
+        matNr = findViewById(R.id.editText);
+        server = findViewById(R.id.textView3);
         Button button = findViewById(R.id.buttonSend);
         Button button2 = findViewById(R.id.buttonCalc);
 
@@ -51,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void contactServer(String matrikelnummer) {
+    public void contactServer(String matrikelnummer) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -60,8 +69,9 @@ public class MainActivity extends AppCompatActivity {
                     Socket socket = new Socket("se2-submission.aau.at", 20080);
 
                     //Datenübertragung
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    out.write(matrikelnummer);
+                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                    out.writeBytes(matrikelnummer + "\n");
+                    out.flush();
 
                     //Antwort
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -75,7 +85,9 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     socket.close();
-                } catch (Exception e) {
+                    out.close();
+                    in.close();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
